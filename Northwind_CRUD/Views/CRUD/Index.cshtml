@@ -1,0 +1,112 @@
+﻿@model Northwind_CRUD.Models.SearchModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <script type="text/javascript" src="~/Scripts/jquery-3.5.1.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/moment.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-table-master/dist/bootstrap-table.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap-theme.min.css" />
+    <link rel="stylesheet" href="~/Content/bootstrap-responsive.min.css" />
+    <link rel="stylesheet" href="~/Scripts/bootstrap-table-master/src/themes/bootstrap-table.scss" />
+    <link rel="stylesheet" href="~/Content/bootstrap-datetimepicker.min.css" />
+    <title>尋找訂單</title>
+</head>
+<body>
+    <p />
+    <div id="toolbar_orders">
+        <form id="search_form" method="get" action="@Url.Action("Search", "CRUD")" accept-charset="utf-8">
+            <span>訂單日期:</span>
+            <input type="text" id="Start_Date" name="StartDate" readonly="readonly" autocomplete="off" style="width:90px; height:30px; align-content:center" value="@(string.IsNullOrEmpty(ViewBag.SearchData.StartDate) ? new DateTime(1996, 7, 1).ToString("yyyy/MM/dd") : ViewBag.SearchData.StartDate)" />
+            <span>&sim;</span>
+            <input type="text" id="End_Date" name="EndDate" readonly="readonly" autocomplete="off" style="width:90px; height:30px; align-content:center" value="@(string.IsNullOrEmpty(ViewBag.SearchData.EndDate) ? new DateTime(1998, 6, 1).ToString("yyyy/MM/dd") : ViewBag.SearchData.EndDate)" />
+
+            <span>訂單編號:</span>
+            <input type="text" id="Order_ID" name="OrderId" style="width:120px; align-content:center" value="@(string.IsNullOrEmpty(ViewBag.SearchData.OrderID) ? "" : ViewBag.SearchData.OrderID)" />
+
+            <span>訂購機構名稱:</span>
+            <input type="text" id="Company_Name" name="CompanyName" style="width:120px; align-content:center" value="@(string.IsNullOrEmpty(ViewBag.SearchData.CompanyName) ? "" : ViewBag.SearchData.CompanyName)" />
+
+            <p /><p />
+            <button type="button" id="search" class="btn btn-default" style="width:90px; height:30px; align-content:center;">搜尋</button>
+        </form>
+    </div>
+    <div>
+        <table id="Orders_tab"
+               class="table"
+               data-toggle="table"
+               data-toolbar="#toolbar_orders"
+               data-search="false"
+               data-show-refresh="false"
+               data-show-export="false"
+               data-minimum-count-columns="2"
+               data-show-pagination-switch="false"
+               data-pagination="true"
+               data-sort-name="OrderId"
+               data-url="@Url.Action("SearchOrder", "CRUD")"
+               data-query-params="queryParams"
+               data-page-list="[10, 20, 25, 50, 100, ALL]"
+               data-link="N">
+            <thead>
+                <tr>
+                    <th data-formatter="indexFormat" data-width="10" data-editable="false">#</th>
+                    <th data-field='OrderID' data-width='20' data-sortable="true" data-filter-control="true" data-editable="false">訂單編號</th>
+                    <th data-field='CompanyName' data-width='120' data-sortable="true" data-filter-control="true" data-editable="false">訂購機構名稱</th>
+                    <th data-field='OrderDate' data-width='40' data-sortable="true" data-filter-control="true" data-editable="true">訂單日期</th>
+                    <th data-field='ShipName' data-width='150'>目的地</th>
+                    <th data-field='ShipCity' data-width='80'>目的地所在城市</th>
+                    <th data-field='link_id' data-width='150' data-formatter="stateFormatter">維護功能</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</body>
+</html>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //設定DateTimePicker
+        $('#StartDate').datetimepicker();
+        $('#EndDate').datetimepicker();
+
+        //查詢
+        $("#search").click(function () {
+            $("#Orders_tab").bootstrapTable("refresh");
+        });
+    });
+
+    function indexFormat(value, row, index) {
+        return index+1;
+    }
+
+    function stateFormatter(value, row, index) {
+        var Edit = '<a href="/CRUD/Edit?OrderID=' + row.OrderID + '" class="save btn btn-success">修改</a> ';
+        var Delete = '<a href="/CRUD/Delete?OrderID=' + row.OrderID + '" class="save btn btn-success">刪除</a> ';
+
+        return [Edit, Delete].join('');
+    }
+
+    function queryParams(params) {
+        debugger;
+        var temp = {
+            //搜尋參數取得
+            OrderID: $("#Order_ID").val(),
+            CompanyName: $("#Company_Name").val(),
+            StartDate: $("#Start_Date").val(),
+            EndDate: $("#End_Date").val(),
+        };
+        return temp;
+    }
+</script>
+
+@section scripts{
+    
+}
